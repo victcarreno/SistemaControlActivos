@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitar Préstamo - Control de Activos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-primary text-white py-3">
+        <div class="container d-flex align-items-center gap-3">
+            <img src="/img/logo.png" alt="Logo" height="50" onerror="this.style.display='none'">
+            <h1 class="h4 mb-0">Control de Activos Fijos y Préstamos</h1>
+        </div>
+        <nav class="container mt-2">
+            <ul class="nav justify-content-end gap-2">
+                <li class="nav-item"><a class="nav-link text-white" href="/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" href="/solicitar-prestamo">Solicitar Préstamo</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/inventario">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/reportes">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/login">Iniciar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container py-4">
+        <!-- Mensaje de éxito -->
+        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Formulario de préstamo -->
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-3">Registrar Nuevo Préstamo</h2>
+                <form th:action="@{/solicitar-prestamo}" method="post" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Nombre del solicitante:</label>
+                        <input type="text" name="nombreSolicitante" class="form-control" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">RUT del solicitante:</label>
+                        <input type="text" name="rutSolicitante" class="form-control" placeholder="Ej: 12.345.678-9" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Curso o asignatura:</label>
+                        <input type="text" name="cursoAsignatura" class="form-control" placeholder="Ej: Electrónica Básica" required>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Laboratorio / Taller:</label>
+                        <select name="taller" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option th:each="taller : ${talleres}" th:value="${taller}" th:text="${taller}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Producto a solicitar:</label>
+                        <select name="productoSolicitado" class="form-select" required>
+                            <option value="">Seleccionar producto...</option>
+                            <option th:each="prod : ${productos}" th:value="${prod}" th:text="${prod}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label">Cantidad:</label>
+                        <input type="number" name="cantidadProducto" class="form-control" min="1" value="1" required>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de devolución:</label>
+                        <input type="date" name="fechaDevolucion" class="form-control" required>
+                    </div>
+                    
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Generar solicitud</button>
+                        <button type="reset" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tabla de préstamos activos -->
+        <section class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Lista de Préstamos Activos</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th><th>Solicitante</th><th>Producto</th><th>Cantidad</th>
+                                <th>Curso</th><th>Taller</th><th>Fecha Préstamo</th>
+                                <th>Fecha Devolución</th><th>Estado</th><th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sol : ${solicitudes}">
+                                <td th:text="'PR-' + ${sol.id}"></td>
+                                <td th:text="${sol.nombreSolicitante}"></td>
+                                <td th:text="${sol.productoSolicitado}"></td>
+                                <td th:text="${sol.cantidadProducto}"></td>
+                                <td th:text="${sol.cursoAsignatura}"></td>
+                                <td th:text="${sol.taller}"></td>
+                                <td th:text="${#temporals.format(sol.fechaSolicitud, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${#temporals.format(sol.fechaDevolucion, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <span th:if="${sol.estado.name() == 'PENDIENTE'}" class="badge bg-warning text-dark">Pendiente</span>
+                                    <span th:if="${sol.estado.name() == 'DEVUELTO'}" class="badge bg-success">Devuelto</span>
+                                    <span th:if="${sol.estado.name() == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/reportes/estado}" method="post" class="d-inline">
+                                        <input type="hidden" name="id" th:value="${sol.id}">
+                                        <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="PENDIENTE" th:selected="${sol.estado.name() == 'PENDIENTE'}">Pendiente</option>
+                                            <option value="DEVUELTO" th:selected="${sol.estado.name() == 'DEVUELTO'}">Devuelto</option>
+                                            <option value="CANCELADO" th:selected="${sol.estado.name() == 'CANCELADO'}">Cancelado</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(solicitudes)}">
+                                <td colspan="10" class="text-center text-muted py-3">No hay préstamos registrados</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p class="mb-0">© 2025 Centro Educacional Matías Cousiño - Sistema de Control de Activos</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

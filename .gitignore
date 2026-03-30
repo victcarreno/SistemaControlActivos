@@ -1,0 +1,33 @@
+# Archivos de compilación
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# Configuración local
+application-local.properties
+*.env
+
+# Base de datos (si usas H2 local)
+*.db
+*.h2.db

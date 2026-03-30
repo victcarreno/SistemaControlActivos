@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario - Control de Activos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header (igual que index) -->
+    <header class="bg-primary text-white py-3">
+        <div class="container d-flex align-items-center gap-3">
+            <img src="/img/logo.png" alt="Logo" height="50" onerror="this.style.display='none'">
+            <h1 class="h4 mb-0">Control de Activos Fijos y Préstamos</h1>
+        </div>
+        <nav class="container mt-2">
+            <ul class="nav justify-content-end gap-2">
+                <li class="nav-item"><a class="nav-link text-white" href="/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/solicitar-prestamo">Solicitar Préstamo</a></li>
+                <li class="nav-item"><a class="nav-link active text-white" href="/inventario">Inventario</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/reportes">Reportes</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/login">Iniciar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container py-4">
+        <!-- Formulario (versión estática - sin backend completo) -->
+        <section class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-3">Agregar/Modificar Activo Fijo</h2>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" placeholder="Nombre del activo">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select">
+                            <option value="">Seleccionar tipo</option>
+                            <option>Herramienta</option>
+                            <option>Componente Electrónico</option>
+                            <option>Instrumento de Medición</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" value="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Ubicación</label>
+                        <input type="text" class="form-control" placeholder="Ubicación">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button class="btn btn-primary w-100">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buscador -->
+        <section class="card mb-4">
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Buscar herramienta o material...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="">Filtrar por tipo</option>
+                            <option>Herramienta</option>
+                            <option>Componente Electrónico</option>
+                            <option>Instrumento de Medición</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabla de inventario (datos de ejemplo) -->
+        <section class="card">
+            <div class="card-body">
+                <table class="table table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th><th>Nombre</th><th>Tipo</th><th>Cantidad</th><th>Ubicación</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>001</td><td>Multímetro Digital</td><td>Instrumento de Medición</td><td>8</td><td>Taller 2</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+                        <tr><td>002</td><td>Cautín</td><td>Herramienta</td><td>12</td><td>Bodega Central</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+                        <tr><td>003</td><td>Osciloscopio</td><td>Instrumento de Medición</td><td>5</td><td>Taller 1</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+                        <tr><td>004</td><td>Resistencias</td><td>Componente Electrónico</td><td>100</td><td>Bodega Central</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p class="mb-0">© 2025 Centro Educacional Matías Cousiño - Sistema de Control de Activos</p>
+    </footer>
+</body>
+</html>
