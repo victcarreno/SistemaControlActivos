@@ -2,105 +2,272 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario - Control de Activos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f9fafb;
+        }
+        main { flex: 1; }
+        header {
+            background-color: #2563eb;
+            color: white;
+            padding: 1rem 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .logo img { height: 50px; width: auto; }
+        .logo h1 { font-size: 1.5rem; font-weight: 600; }
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            align-items: center;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+        nav ul li a:hover, nav ul li a.active {
+            background-color: #1d4ed8;
+        }
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            flex: 1;
+        }
+        .formulario {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .formulario h2 { margin-bottom: 1rem; color: #1f2937; }
+        .tabla-inventario {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .tabla-inventario th, .tabla-inventario td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tabla-inventario th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-editar { background-color: #f59e0b; color: white; }
+        .btn-eliminar { background-color: #ef4444; color: white; }
+        .btn-guardar { background-color: #10b981; color: white; }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-secondary { background-color: #6b7280; color: white; }
+        .acceso-denegado {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .acceso-denegado h2 { color: #dc2626; margin-bottom: 1rem; }
+        footer {
+            background-color: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .stock-bajo { color: #dc2626; font-weight: 600; }
+        .stock-medio { color: #f59e0b; font-weight: 600; }
+        .stock-alto { color: #10b981; font-weight: 600; }
+    </style>
 </head>
 <body>
-    <!-- Header (igual que index) -->
-    <header class="bg-primary text-white py-3">
-        <div class="container d-flex align-items-center gap-3">
-            <img src="/img/logo.png" alt="Logo" height="50" onerror="this.style.display='none'">
-            <h1 class="h4 mb-0">Control de Activos Fijos y Préstamos</h1>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="/img/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <h1>Control de Activos Fijos y Préstamos</h1>
         </div>
-        <nav class="container mt-2">
-            <ul class="nav justify-content-end gap-2">
-                <li class="nav-item"><a class="nav-link text-white" href="/">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/solicitar-prestamo">Solicitar Préstamo</a></li>
-                <li class="nav-item"><a class="nav-link active text-white" href="/inventario">Inventario</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/reportes">Reportes</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/login">Iniciar Sesión</a></li>
+        <nav>
+            <ul>
+                <li><a href="/" th:href="@{/}">Inicio</a></li>
+                <li><a href="/solicitar-prestamo" th:href="@{/solicitar-prestamo}">Solicitar Préstamo</a></li>
+                <li th:if="${session.usuario != null and session.usuario.rol == 'ADMIN'}">
+                    <a href="/inventario" th:href="@{/inventario}" class="active">Inventario</a>
+                </li>
+                <li th:if="${session.usuario != null}">
+                    <a href="/mis-prestamos" th:href="@{/mis-prestamos}">Mis Préstamos</a>
+                </li>
+                <li><a href="/reportes" th:href="@{/reportes}">Reportes</a></li>
+                <li th:if="${session.usuario != null}">
+                    <span style="color: white; padding: 0.5rem;">
+                        👤 <span th:text="${session.nombreUsuario}"></span>
+                    </span>
+                </li>
+                <li th:if="${session.usuario != null}">
+                    <a href="/logout" th:href="@{/logout}" style="background-color: #dc2626; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none;">Logout</a>
+                </li>
+                <li th:if="${session.usuario == null}">
+                    <a href="/login" th:href="@{/login}">Iniciar Sesión</a>
+                </li>
             </ul>
         </nav>
     </header>
 
-    <main class="container py-4">
-        <!-- Formulario (versión estática - sin backend completo) -->
-        <section class="card mb-4">
-            <div class="card-body">
-                <h2 class="card-title mb-3">Agregar/Modificar Activo Fijo</h2>
-                <div class="row g-3">
+    <main>
+        <!-- Verificar si es ADMIN -->
+        <div th:if="${session.usuario == null or session.usuario.rol != 'ADMIN'}" class="contenedor">
+            <div class="acceso-denegado">
+                <h2>🔒 Acceso Denegado</h2>
+                <p class="text-muted">Solo los administradores pueden acceder al inventario.</p>
+                <a href="/index" th:href="@{/index}" class="btn btn-primary mt-3">Volver al inicio</a>
+            </div>
+        </div>
+
+        <!-- Contenido para ADMIN -->
+        <div th:if="${session.usuario != null and session.usuario.rol == 'ADMIN'}" class="contenedor">
+            
+            <!-- Mensajes de éxito/error -->
+            <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${mensaje}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- Formulario Agregar/Modificar -->
+            <section class="formulario">
+                <h2 class="card-title mb-3" th:text="${activoEditando != null} ? 'Modificar Activo Fijo' : 'Agregar Activo Fijo'"></h2>
+                <form th:action="@{/inventario/guardar}" method="post" class="row g-3">
+                    <input type="hidden" name="id" th:value="${activoEditando?.id}">
+                    
                     <div class="col-md-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" placeholder="Nombre del activo">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo" th:value="${activoEditando?.nombre}" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Tipo</label>
-                        <select class="form-select">
+                        <label class="form-label">Tipo *</label>
+                        <select name="tipo" class="form-select" required>
                             <option value="">Seleccionar tipo</option>
-                            <option>Herramienta</option>
-                            <option>Componente Electrónico</option>
-                            <option>Instrumento de Medición</option>
+                            <option value="Herramienta" th:selected="${activoEditando?.tipo == 'Herramienta'}">Herramienta</option>
+                            <option value="Componente Electrónico" th:selected="${activoEditando?.tipo == 'Componente Electrónico'}">Componente Electrónico</option>
+                            <option value="Instrumento de Medición" th:selected="${activoEditando?.tipo == 'Instrumento de Medición'}">Instrumento de Medición</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" value="1">
+                        <label class="form-label">Cantidad *</label>
+                        <input type="number" name="cantidad" class="form-control" th:value="${activoEditando?.cantidad != null} ? ${activoEditando.cantidad} : 1" min="1" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Ubicación</label>
-                        <input type="text" class="form-control" placeholder="Ubicación">
+                        <label class="form-label">Ubicación *</label>
+                        <input type="text" name="ubicacion" class="form-control" placeholder="Ubicación" th:value="${activoEditando?.ubicacion}" required>
                     </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button class="btn btn-primary w-100">Agregar</button>
+                    <div class="col-md-1 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary w-100" th:text="${activoEditando != null} ? 'Actualizar' : 'Agregar'"></button>
+                        <a th:if="${activoEditando != null}" th:href="@{/inventario}" class="btn btn-secondary w-100">Cancelar</a>
                     </div>
-                </div>
-            </div>
-        </section>
+                </form>
+            </section>
 
-        <!-- Buscador -->
-        <section class="card mb-4">
-            <div class="card-body">
-                <div class="row g-2">
+            <!-- Buscador -->
+            <section class="formulario">
+                <form th:action="@{/inventario}" method="get" class="row g-2">
                     <div class="col-md-6">
-                        <input type="text" class="form-control" placeholder="Buscar herramienta o material...">
+                        <input type="text" name="buscar" class="form-control" placeholder="Buscar herramienta o material..." th:value="${buscar}">
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select">
+                        <select name="tipoFiltro" class="form-select">
                             <option value="">Filtrar por tipo</option>
-                            <option>Herramienta</option>
-                            <option>Componente Electrónico</option>
-                            <option>Instrumento de Medición</option>
+                            <option value="Herramienta" th:selected="${tipoFiltro == 'Herramienta'}">Herramienta</option>
+                            <option value="Componente Electrónico" th:selected="${tipoFiltro == 'Componente Electrónico'}">Componente Electrónico</option>
+                            <option value="Instrumento de Medición" th:selected="${tipoFiltro == 'Instrumento de Medición'}">Instrumento de Medición</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-primary w-100">Buscar</button>
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Tabla de inventario -->
+            <section class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">Lista de Activos Fijos</h3>
+                    <div class="table-responsive">
+                        <table class="tabla-inventario">
+                            <thead>
+                                <tr>
+                                    <th>ID</th><th>Nombre</th><th>Tipo</th><th>Cantidad</th><th>Ubicación</th><th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ✅ CAMBIO: Usar ID simple sin padLeft -->
+                                <tr th:each="activo : ${activos}">
+                                    <td th:text="${activo.id}"></td>
+                                    <td th:text="${activo.nombre}"></td>
+                                    <td th:text="${activo.tipo}"></td>
+                                    <td>
+                                        <span th:if="${activo.cantidad <= 5}" class="stock-bajo" th:text="${activo.cantidad} + ' 🔴'"></span>
+                                        <span th:if="${activo.cantidad > 5 and activo.cantidad <= 15}" class="stock-medio" th:text="${activo.cantidad} + ' 🟡'"></span>
+                                        <span th:if="${activo.cantidad > 15}" class="stock-alto" th:text="${activo.cantidad} + ' 🟢'"></span>
+                                    </td>
+                                    <td th:text="${activo.ubicacion}"></td>
+                                    <td>
+                                        <a th:href="@{/inventario/editar/{id}(id=${activo.id})}" class="btn btn-sm btn-editar">Editar</a>
+                                        <a th:href="@{/inventario/eliminar/{id}(id=${activo.id})}" class="btn btn-sm btn-eliminar" onclick="return confirm('¿Está seguro de eliminar este activo?')">Eliminar</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(activos)}">
+                                    <td colspan="6" class="text-center text-muted py-3">
+                                        No hay activos registrados en el inventario
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Tabla de inventario (datos de ejemplo) -->
-        <section class="card">
-            <div class="card-body">
-                <table class="table table-striped mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th><th>Nombre</th><th>Tipo</th><th>Cantidad</th><th>Ubicación</th><th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>001</td><td>Multímetro Digital</td><td>Instrumento de Medición</td><td>8</td><td>Taller 2</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
-                        <tr><td>002</td><td>Cautín</td><td>Herramienta</td><td>12</td><td>Bodega Central</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
-                        <tr><td>003</td><td>Osciloscopio</td><td>Instrumento de Medición</td><td>5</td><td>Taller 1</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
-                        <tr><td>004</td><td>Resistencias</td><td>Componente Electrónico</td><td>100</td><td>Bodega Central</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
 
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        <p class="mb-0">© 2025 Centro Educacional Matías Cousiño - Sistema de Control de Activos</p>
+    <footer>
+        <p class="mb-0">© 2026 Liceo N°14 Juan Gomez Millas - Sistema de Control de Inventario</p>
     </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

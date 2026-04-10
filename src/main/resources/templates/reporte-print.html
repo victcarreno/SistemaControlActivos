@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Préstamo - <span th:text="${solicitud.nombreSolicitante}"></span></title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 2rem; 
+            background: white;
+            line-height: 1.6;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding-bottom: 1rem; 
+            border-bottom: 3px solid #2563eb; 
+        }
+        .header h1 { 
+            color: #2563eb; 
+            font-size: 1.8rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .header h2 { 
+            color: #374151; 
+            font-size: 1.2rem; 
+        }
+        .info { 
+            background: #f9fafb; 
+            padding: 1.5rem; 
+            border-radius: 0.5rem; 
+            margin-bottom: 2rem; 
+            border: 1px solid #e5e7eb; 
+        }
+        .info h3 { 
+            color: #2563eb; 
+            margin-bottom: 1rem; 
+            font-size: 1.3rem; 
+        }
+        .fila { 
+            display: flex; 
+            margin-bottom: 0.75rem; 
+            padding-bottom: 0.5rem; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+        .fila:last-child { 
+            border-bottom: none; 
+        }
+        .etiqueta { 
+            font-weight: 600; 
+            width: 200px; 
+            color: #374151;
+            flex-shrink: 0;
+        }
+        .valor { 
+            flex: 1; 
+            color: #1f2937; 
+        }
+        .firmas { 
+            margin-top: 3rem; 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 2rem; 
+        }
+        .firma { 
+            flex: 1; 
+            text-align: center; 
+            padding-top: 3rem; 
+            border-top: 1px solid #374151;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .estado { 
+            display: inline-block; 
+            padding: 0.25rem 0.75rem; 
+            border-radius: 0.375rem; 
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .estado-pendiente { background: #fef3c7; color: #92400e; }
+        .estado-devuelto { background: #d1fae5; color: #065f46; }
+        .estado-cancelado { background: #fee2e2; color: #991b1b; }
+        .estado-aprobado { background: #dbeafe; color: #1e40af; }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+        }
+        @media print { 
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Control de Activos Fijos y Préstamos</h1>
+        <h2>Liceo N°14 Juan Gomez Millas</h2>
+    </div>
+    
+    <div class="info">
+        <h3>Reporte de Préstamo - ID: PR-<span th:text="${solicitud.id}"></span></h3>
+        
+        <div class="fila">
+            <div class="etiqueta">Solicitante:</div>
+            <div class="valor" th:text="${solicitud.nombreSolicitante}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">RUT:</div>
+            <div class="valor" th:text="${solicitud.rutSolicitante}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Producto:</div>
+            <div class="valor" th:text="${solicitud.productoSolicitado}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Cantidad:</div>
+            <div class="valor">
+                <span th:text="${solicitud.cantidadProducto}"></span> unidad(es)
+            </div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Curso/Asignatura:</div>
+            <div class="valor" th:text="${solicitud.cursoAsignatura}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Taller:</div>
+            <div class="valor" th:text="${solicitud.taller}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Fecha de Préstamo:</div>
+            <div class="valor" th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy')}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Fecha de Devolución:</div>
+            <div class="valor" th:text="${#temporals.format(solicitud.fechaDevolucion, 'dd/MM/yyyy')}"></div>
+        </div>
+        
+        <div class="fila">
+            <div class="etiqueta">Estado:</div>
+            <div class="valor">
+                <!-- ✅ CAMBIO 2: Usar toLowerCase() directo en Java, no en Thymeleaf -->
+                <span th:class="'estado estado-' + ${solicitud.estado.name().toLowerCase()}" 
+                      th:text="${solicitud.estado}"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="firmas">
+        <div class="firma">Firma del Solicitante</div>
+        <div class="firma">Firma de Responsable</div>
+    </div>
+    
+    <div class="footer">
+        <p>Documento generado el <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span> 
+           a las <span th:text="${#temporals.format(#temporals.createNow(), 'HH:mm')}"></span></p>
+        <p>Sistema de Control de Inventario - Liceo N°14 Juan Gomez Millas</p>
+    </div>
+    
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 250);
+        }
+    </script>
+</body>
+</html>
