@@ -1,6 +1,6 @@
 # 📦 Sistema de Control de Activos Fijos y Préstamos
 
-Sistema desarrollado para el **Centro Educacional Matías Cousiño** que permite gestionar el inventario y préstamos de materiales de los talleres de Electrónica y Telecomunicaciones.
+Sistema desarrollado para el **Liceo N°14 Juan Gomez Millas** que permite gestionar el inventario y préstamos de materiales.
 
 ## 🛠️ Tecnologías
 
@@ -13,7 +13,7 @@ Sistema desarrollado para el **Centro Educacional Matías Cousiño** que permite
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/TU_USUARIO/SistemaControlActivos.git
+git clone https://github.com/victcarreno/SistemaControlActivos.git
 
 # Entrar al directorio
 cd SistemaControlActivos
